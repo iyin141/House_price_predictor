@@ -1,11 +1,18 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import os
 
-# Load all trained models
-lr_model = pickle.load(open('lr_model.pkl', 'rb'))
-ridge_model = pickle.load(open('ridge_model.pkl', 'rb'))
-lasso_model = pickle.load(open('lasso_model.pkl', 'rb'))
+# === FIX: Safe absolute path for model files ===
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def load_model(filename):
+    return pickle.load(open(os.path.join(BASE_DIR, filename), "rb"))
+
+# Load all trained models safely
+lr_model = load_model("lr_model.pkl")
+ridge_model = load_model("ridge_model.pkl")
+lasso_model = load_model("lasso_model.pkl")
 
 st.title("House Price Prediction")
 
@@ -50,6 +57,6 @@ if st.button("Predict Price"):
         model = ridge_model
     else:
         model = lasso_model
-        
+
     prediction = model.predict(input_data)[0]
     st.success(f"Predicted House Price: ₦{prediction:,.0f}")
